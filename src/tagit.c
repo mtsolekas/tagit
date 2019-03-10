@@ -125,7 +125,7 @@ int edit(glob_t *pglob, char *prog, char *format)
             ++skipped;
         }
 
-        if (i % interval == 0)
+        if (i % interval == 0 || i + 10 >= pglob->gl_pathc)
             progress_bar(i + 1, pglob->gl_pathc);
 
         free(artist);
