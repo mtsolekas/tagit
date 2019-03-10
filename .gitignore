@@ -1,0 +1,18 @@
+# Build
+autom4te.cache/
+m4/
+src/.deps/
+aclocal.m4
+compile
+config.*
+configure
+depcomp
+install-sh
+*Makefile
+*Makefile.in
+missing
+stamp-h1
+
+# Project
+*.[ao]
+tagit
