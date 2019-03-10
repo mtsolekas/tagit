@@ -20,11 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <libgen.h>
 #include <glob.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <tag_c.h>
 
 #include "util.h"
