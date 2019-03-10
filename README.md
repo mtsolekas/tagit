@@ -6,9 +6,9 @@ Specifically the file name should be in the form: "Artist - Title.Extension"
 
 ## Example
 
-If your music directory is lets say ~/Music and it contains ogg vorbis and
-ogg opus files in the above form, then all you have to do is run
-**tagit ~/Music opus ogg**
+If the directory you want to edit is ~/Music and it contains ogg
+vorbis and ogg opus files in the above form, then all you have to
+do is run **tagit ~/Music opus ogg**
 
 ## Build Requirements:
 - Autoconf
