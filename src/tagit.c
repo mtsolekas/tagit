@@ -79,7 +79,7 @@ Available options are\n\
     return EXIT_SUCCESS;
 }
 
-int edit(glob_t *pglob, char *prog, char *format)
+int edit(glob_t * pglob, char *prog, char *format)
 {
     char *fname, *delim, *ext;
     char *artist, *tag_artist, *title, *tag_title;
