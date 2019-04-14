@@ -1,5 +1,5 @@
 AM_CPPFLAGS = $(TAGLIB_CFLAGS)
-AM_CFLAGS = -Wall -Wextra -std=gnu99 -O3
+AM_CFLAGS = -Wall -Wextra -std=gnu99 -O2
 AM_LDFLAGS = $(TAGLIB_LIBS)
 
 if DEBUG
