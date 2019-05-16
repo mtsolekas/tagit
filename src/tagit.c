@@ -89,6 +89,8 @@ int edit(glob_t *pglob, char *prog, char *format)
 
     total += pglob->gl_pathc;
     interval = pglob->gl_pathc / 10;
+    if (!interval)
+        interval = 1;
 
     for (size_t i = 0; i < pglob->gl_pathc; ++i) {
         fname = basename(pglob->gl_pathv[i]);
