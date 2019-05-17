@@ -59,7 +59,7 @@ Available options are\n\
     if (stat(argv[1], &sb) || !S_ISDIR(sb.st_mode)) {
         fprintf(stderr, "%s: first argument must be a directory\n",
                 basename(argv[0]));
-        return EXIT_FAILURE;            
+        return EXIT_FAILURE;
     }
 
     if (argc == 2) {
@@ -70,7 +70,7 @@ Available options are\n\
         formats_n = argc - 2;
         formats = xmalloc(sizeof(char *) * formats_n);
         for (int i = 2; i < argc; ++i)
-            formats[i-2] = argv[i];
+            formats[i - 2] = argv[i];
     }
 
     skipped = 0;
