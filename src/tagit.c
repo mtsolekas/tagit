@@ -22,6 +22,9 @@
 #include <string.h>
 #include <libgen.h>
 #include <glob.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <tag_c.h>
 
 #include "util.h"
@@ -32,47 +35,70 @@ int edit(glob_t *, char *, char *);
 
 int main(int argc, char **argv)
 {
+    struct stat sb;
     char *format, *pat;
     int globerr;
     glob_t pglob;
+    int formats_n;
+    char **formats;
 
     if (argc > 1 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))) {
-        printf("Usage: tagit DIR_TO_EDIT EXT_1 EXT_2\n\
-Automatically assign artist and title tags, based on filename\n\n\
+        printf("Usage: tagit DIR [EXT1 [EXT2 ...]]\n\
+Automatically assign artist and title tags, based on filename.\n\
+If no extensions are provided, then opus is used by default.\n\n\
 Available options are\n\
   -h    print this message\n");
         return EXIT_SUCCESS;
     }
 
-    if (argc < 3) {
+    if (argc < 2) {
         fprintf(stderr, "%s: too few arguments\n", basename(argv[0]));
         return EXIT_FAILURE;
+    }
+
+    if (stat(argv[1], &sb) || !S_ISDIR(sb.st_mode)) {
+        fprintf(stderr, "%s: first argument must be a directory\n",
+                basename(argv[0]));
+        return EXIT_FAILURE;            
+    }
+
+    if (argc == 2) {
+        formats_n = 1;
+        formats = xmalloc(sizeof(char *) * formats_n);
+        formats[0] = "opus";
+    } else {
+        formats_n = argc - 2;
+        formats = xmalloc(sizeof(char *) * formats_n);
+        for (int i = 2; i < argc; ++i)
+            formats[i-2] = argv[i];
     }
 
     skipped = 0;
     total = 0;
 
-    for (int i = 2; i < argc; ++i) {
-        format = strconcat("*.", argv[i]);
+    for (int i = 0; i < formats_n; ++i) {
+        format = strconcat("*.", formats[i]);
         pat = pathconcat(argv[1], format);
 
         globerr = glob(pat, GLOB_ERR, NULL, &pglob);
 
         if (globerr == GLOB_NOMATCH)
             fprintf(stderr, "%s: no match for %s files\n",
-                    basename(argv[0]), argv[i]);
+                    basename(argv[0]), formats[i]);
         else if (globerr)
             fprintf(stderr, "%s: glob error\n", basename(argv[0]));
 
         if (!globerr) {
             edit(&pglob, argv[0], format);
-            printf(" %s files\n", argv[i]);
+            printf(" %s files\n", formats[i]);
         }
 
         free(format);
         free(pat);
         globfree(&pglob);
     }
+
+    free(formats);
 
     printf("\nEdited %ld files(s) (%ld skipped)\n", total - skipped, skipped);
 
