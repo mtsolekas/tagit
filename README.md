@@ -8,7 +8,11 @@ Specifically the file name should be in the form: "Artist - Title.Extension"
 
 If the directory you want to edit is ~/Music and it contains ogg
 vorbis and ogg opus files in the above form, then all you have to
-do is run **tagit ~/Music opus ogg** or simply **tagit ~/Music**
+do is run **tagit ~/Music -f opus,ogg** or simply **tagit ~/Music**
+
+The previous invokation method of **tagit ~/Music opus ogg** is still
+valid, but if mixed with the --format option only the option will be
+taken into account.
 
 ## Build Requirements:
 - Autoconf
