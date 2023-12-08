@@ -149,6 +149,10 @@ int main(int argc, char **argv)
     printf("\nEdited %ld files(s) (%ld skipped) (%ld errors)\n",
            total - skipped - errored, skipped, errored);
 
+    if (errored) {
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -169,13 +173,13 @@ int edit(glob_t *pglob, char *prog, char *format)
         fname = basename(pglob->gl_pathv[i]);
 
         if (!(file = taglib_file_new(pglob->gl_pathv[i]))) {
-            fprintf(stderr, "%s: file read error for", basename(prog));
+            fprintf(stderr, "%s: file read error for %s", basename(prog), fname);
             total -= i + 1;
             return -1;
         }
 
         if (!(tag = taglib_file_tag(file))) {
-            fprintf(stderr, "%s: tag read error for", basename(prog));
+            fprintf(stderr, "%s: tag read error for %s", basename(prog), fname);
             total -= i + 1;
             return -1;
         }
@@ -187,6 +191,9 @@ int edit(glob_t *pglob, char *prog, char *format)
                 progress_bar(i + 1, pglob->gl_pathc);
 
             edit_func_cleanup(file, NULL, NULL);
+
+            fprintf(stderr, "%s: failed to parse filename for %s\n", basename(prog), fname);
+
             continue;
         }
 
