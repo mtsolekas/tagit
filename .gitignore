@@ -5,7 +5,7 @@ src/.deps/
 aclocal.m4
 compile
 config.*
-configure
+configure*
 depcomp
 install-sh
 *Makefile

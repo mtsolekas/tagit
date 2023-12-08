@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2020 Marios Tsolekas <marios.tsolekas@gmail.com>
+/* Copyright (C) 2018-2020, 2023 Marios Tsolekas <marios.tsolekas@gmail.com>
 
    This file is part of Tagit.
 
@@ -43,9 +43,10 @@ Available options are\n\
                  (Default is just opus)"
 
 
-size_t total, skipped;
+size_t total, skipped, errored;
 
 int edit(glob_t *, char *, char *);
+void edit_func_cleanup(TagLib_File *, char *, char *);
 
 int main(int argc, char **argv)
 {
@@ -119,6 +120,7 @@ int main(int argc, char **argv)
 
     skipped = 0;
     total = 0;
+    errored = 0;
 
     for (int i = 0; i < formats_n; ++i) {
         format = strconcat("*.", formats[i]);
@@ -144,7 +146,8 @@ int main(int argc, char **argv)
 
     free(formats);
 
-    printf("\nEdited %ld files(s) (%ld skipped)\n", total - skipped, skipped);
+    printf("\nEdited %ld files(s) (%ld skipped) (%ld errors)\n",
+           total - skipped - errored, skipped, errored);
 
     return EXIT_SUCCESS;
 }
@@ -177,7 +180,17 @@ int edit(glob_t *pglob, char *prog, char *format)
             return -1;
         }
 
-        delim = strstr(fname, " - ") + 3;
+        if (!(delim = strstr(fname, " - "))) {
+            ++errored;
+
+            if (i % interval == 0 || i + 10 >= pglob->gl_pathc)
+                progress_bar(i + 1, pglob->gl_pathc);
+
+            edit_func_cleanup(file, NULL, NULL);
+            continue;
+        }
+
+        delim += 3;
         ext = strstr(fname, format + 1);
 
         artist = xstrndup(fname, strlen(fname) - strlen(delim - 3));
@@ -197,12 +210,19 @@ int edit(glob_t *pglob, char *prog, char *format)
         if (i % interval == 0 || i + 10 >= pglob->gl_pathc)
             progress_bar(i + 1, pglob->gl_pathc);
 
-        free(artist);
-        free(title);
-
-        taglib_tag_free_strings();
-        taglib_file_free(file);
+        edit_func_cleanup(file, artist, title);
     }
 
     return 0;
+}
+
+void edit_func_cleanup(TagLib_File *file, char *artist, char *title)
+{
+        if (artist)
+            free(artist);
+        if  (title)
+            free(title);
+
+        taglib_tag_free_strings();
+        taglib_file_free(file);
 }
